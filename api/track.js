@@ -13,9 +13,17 @@ export default async function handler(req, res) {
       req.on("error", reject);
     });
 
+    const headers = new Headers();
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (value) headers.set(key, Array.isArray(value) ? value.join(", ") : value);
+    }
+    if (body?.length && !headers.has("content-type")) {
+      headers.set("content-type", "application/json");
+    }
+
     const request = new Request(url, {
       method: req.method,
-      headers: req.headers,
+      headers,
       body: body?.length ? body : undefined,
     });
 

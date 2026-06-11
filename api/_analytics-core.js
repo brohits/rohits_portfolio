@@ -1,4 +1,5 @@
 const BLOB_PATHNAME = "portfolio-analytics-events.json";
+const KV_KEY = "portfolio-analytics-events";
 const MAX_EVENTS = 5000;
 const PASSWORD = process.env.ANALYTICS_PASSWORD || "9589";
 
@@ -26,21 +27,42 @@ function trimEvents(events) {
 }
 
 function hasBlobToken() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  return Boolean(
+    process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID
+  );
+}
+
+function hasKv() {
+  return Boolean(
+    process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
+  );
 }
 
 function isVercel() {
   return Boolean(process.env.VERCEL);
 }
 
+function shouldTryBlob() {
+  return hasBlobToken() || isVercel();
+}
+
+function isBlobConfigError(error) {
+  const message = String(error?.message || error).toLowerCase();
+  return (
+    message.includes("token") ||
+    message.includes("unauthorized") ||
+    message.includes("not configured") ||
+    message.includes("store")
+  );
+}
+
 async function readBlobEvents() {
-  if (!hasBlobToken()) {
+  if (!shouldTryBlob()) {
     return null;
   }
 
-  const { get } = await import("@vercel/blob");
-
   try {
+    const { get } = await import("@vercel/blob");
     const result = await get(BLOB_PATHNAME, { access: "private" });
     if (!result) return [];
 
@@ -49,34 +71,71 @@ async function readBlobEvents() {
     return Array.isArray(parsed.events) ? parsed.events : [];
   } catch (error) {
     const message = String(error?.message || error).toLowerCase();
-    if (message.includes("not found") || message.includes("does not exist")) {
+    if (
+      message.includes("not found") ||
+      message.includes("does not exist")
+    ) {
       return [];
+    }
+    if (isBlobConfigError(error)) {
+      return null;
     }
     throw error;
   }
 }
 
 async function writeBlobEvents(events) {
-  if (!hasBlobToken()) {
+  if (!shouldTryBlob()) {
     return false;
   }
 
-  const { put } = await import("@vercel/blob");
-
-  await put(
-    BLOB_PATHNAME,
-    JSON.stringify({
-      events: trimEvents(events),
-      updatedAt: new Date().toISOString(),
-    }),
-    {
-      access: "private",
-      allowOverwrite: true,
-      addRandomSuffix: false,
-      contentType: "application/json",
+  try {
+    const { put } = await import("@vercel/blob");
+    await put(
+      BLOB_PATHNAME,
+      JSON.stringify({
+        events: trimEvents(events),
+        updatedAt: new Date().toISOString(),
+      }),
+      {
+        access: "private",
+        allowOverwrite: true,
+        addRandomSuffix: false,
+        contentType: "application/json",
+      }
+    );
+    return true;
+  } catch (error) {
+    if (isBlobConfigError(error)) {
+      return false;
     }
-  );
+    throw error;
+  }
+}
 
+async function readKvEvents() {
+  if (!hasKv()) {
+    return null;
+  }
+
+  const { kv } = await import("@vercel/kv");
+  const data = await kv.get(KV_KEY);
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.events)) return data.events;
+  return [];
+}
+
+async function writeKvEvents(events) {
+  if (!hasKv()) {
+    return false;
+  }
+
+  const { kv } = await import("@vercel/kv");
+  await kv.set(KV_KEY, {
+    events: trimEvents(events),
+    updatedAt: new Date().toISOString(),
+  });
   return true;
 }
 
@@ -131,33 +190,56 @@ async function loadEvents() {
   if (blobEvents !== null) {
     return blobEvents;
   }
+
+  const kvEvents = await readKvEvents();
+  if (kvEvents !== null) {
+    return kvEvents;
+  }
+
   return readLocalEvents();
+}
+
+async function saveEvents(events) {
+  const trimmed = trimEvents(events);
+
+  if (await writeBlobEvents(trimmed).catch(() => false)) {
+    return "blob";
+  }
+
+  if (await writeKvEvents(trimmed).catch(() => false)) {
+    return "kv";
+  }
+
+  if (!isVercel()) {
+    await writeLocalEvents(trimmed);
+    return "local";
+  }
+
+  return null;
 }
 
 async function appendEvent(event) {
   const events = await loadEvents();
   events.push(event);
-  const trimmed = trimEvents(events);
-
-  const wroteBlob = await writeBlobEvents(trimmed).catch(() => false);
-  if (!wroteBlob) {
-    await writeLocalEvents(trimmed);
-  }
-
-  return event;
+  const mode = await saveEvents(events);
+  return { event, saved: Boolean(mode), storage: mode };
 }
 
 async function clearEvents() {
-  const wroteBlob = await writeBlobEvents([]).catch(() => false);
-  if (!wroteBlob) {
-    await writeLocalEvents([]);
-  }
+  return saveEvents([]);
 }
 
 function getStorageMode() {
-  if (hasBlobToken()) return "blob";
-  if (isVercel()) return "vercel (add Blob store)";
+  if (hasBlobToken() || isVercel()) return hasBlobToken() ? "blob" : "blob (connect store)";
+  if (hasKv()) return "kv";
+  if (isVercel()) return "none";
   return "local";
+}
+
+function getStorageWarning() {
+  if (hasBlobToken() || hasKv()) return "";
+  if (!isVercel()) return "";
+  return "Connect Vercel Blob: Project → Storage → Create Blob → link to this project → Redeploy. Visits cannot be saved until then.";
 }
 
 function isAuthorized(request) {
@@ -282,8 +364,12 @@ export async function handleTrack(request) {
       timestamp: payload.timestamp || new Date().toISOString(),
     };
 
-    await appendEvent(event);
-    return jsonResponse({ ok: true });
+    const result = await appendEvent(event);
+    return jsonResponse({
+      ok: true,
+      saved: result.saved,
+      storage: result.storage,
+    });
   } catch (error) {
     console.error("track error", error);
     return jsonResponse({ error: error?.message || "Failed to save event" }, 500);
@@ -304,6 +390,8 @@ export async function handleAnalytics(request) {
       const events = await loadEvents();
       return jsonResponse({
         storage: getStorageMode(),
+        storageWarning: getStorageWarning(),
+        storageReady: Boolean(hasBlobToken() || hasKv() || !isVercel()),
         summary: summarize(events),
         events,
       });

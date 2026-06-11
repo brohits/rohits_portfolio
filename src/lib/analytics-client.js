@@ -69,11 +69,20 @@ export async function trackEvent(type, details = {}) {
     ...details,
   };
 
+  const body = JSON.stringify(payload);
+
   try {
+    if (navigator.sendBeacon) {
+      const blob = new Blob([body], { type: "application/json" });
+      if (navigator.sendBeacon("/api/track", blob)) {
+        return;
+      }
+    }
+
     await fetch("/api/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body,
       keepalive: true,
     });
   } catch {

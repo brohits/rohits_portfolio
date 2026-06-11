@@ -169,10 +169,10 @@ export function AnalyticsDashboard() {
             <h1>Visitor dashboard</h1>
             <p className="analytics-sub">
               Storage: <strong>{data?.storage || "…"}</strong>
-              {data?.storage === "vercel (add Blob store)" &&
-                " — create a Blob store in Vercel → Storage to save visits"}
+              {data?.storageReady === false &&
+                " — visits are not being saved until Blob is connected"}
               {data?.storage === "local" &&
-                " — local file; add Vercel Blob on deploy for production persistence"}
+                " — local file (development only)"}
             </p>
           </div>
           <div className="analytics-actions">
@@ -195,6 +195,12 @@ export function AnalyticsDashboard() {
         </header>
 
         {error && <p className="analytics-error">{error}</p>}
+
+        {data?.storageWarning && (
+          <div className="analytics-alert" role="status">
+            <strong>Storage not connected.</strong> {data.storageWarning}
+          </div>
+        )}
 
         {summary && (
           <>

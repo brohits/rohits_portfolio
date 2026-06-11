@@ -2608,6 +2608,20 @@ body.custom-cursor-active button {
   color: #b42318;
 }
 
+.analytics-alert {
+  margin: 0 0 1.5rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--glow-orange) 55%, var(--border));
+  background: color-mix(in srgb, var(--glow-orange) 12%, var(--bg-elevated));
+  color: var(--ink);
+  line-height: 1.55;
+  font-size: 0.9375rem;
+}
+
+.analytics-alert strong {
+  color: var(--ink);
+}
+
 .analytics-stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
