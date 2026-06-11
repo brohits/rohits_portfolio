@@ -1,4 +1,4 @@
-import { handleAnalytics, handleTrack } from "../lib/analytics-handlers.js";
+import { handleAnalytics, handleTrack } from "../api/_analytics-core.js";
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
