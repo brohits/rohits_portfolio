@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ImageWithPlaceholder, MediaPlaceholder } from "./LoadingPlaceholder";
 import {
   markProjectVideoComplete,
   registerProjectVideo,
@@ -16,6 +17,7 @@ export function CardVisual({ mock, image, video, title }) {
 function VideoPreview({ video, title }) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
+  const [ready, setReady] = useState(false);
   const instanceRef = useRef({
     ratio: 0,
     completed: false,
@@ -52,7 +54,14 @@ function VideoPreview({ video, title }) {
       markProjectVideoComplete(instance);
     };
 
+    const handleReady = () => setReady(true);
+
     videoEl.addEventListener("ended", handleEnded);
+    videoEl.addEventListener("loadeddata", handleReady);
+
+    if (videoEl.readyState >= 2) {
+      setReady(true);
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -67,18 +76,23 @@ function VideoPreview({ video, title }) {
     return () => {
       observer.disconnect();
       videoEl.removeEventListener("ended", handleEnded);
+      videoEl.removeEventListener("loadeddata", handleReady);
       unregister();
     };
   }, []);
 
   return (
-    <div ref={containerRef} className="visual-mock mock-video">
+    <div
+      ref={containerRef}
+      className={`media-shell mock-video${ready ? " is-loaded" : ""}`}
+    >
+      <MediaPlaceholder />
       <video
         ref={videoRef}
         src={video}
         muted
         playsInline
-        preload="none"
+        preload="metadata"
         aria-label={`${title} preview`}
       />
     </div>
@@ -92,18 +106,15 @@ function MockPreview({ type, image, video, title }) {
 
   if (type === "image" && image) {
     return (
-      <div className="visual-mock mock-image">
-        <img src={image} alt={`${title} preview`} loading="lazy" />
+      <div className="visual-mock">
+        <ImageWithPlaceholder src={image} alt={`${title} preview`} />
       </div>
     );
   }
 
   if (type === "placeholder") {
     return (
-      <div
-        className="visual-mock mock-placeholder"
-        aria-hidden="true"
-      />
+      <div className="visual-mock mock-placeholder" aria-hidden="true" />
     );
   }
 

@@ -7,7 +7,7 @@ export const site = {
   portfolio: "https://rohitportfolio-khaki.vercel.app/",
   linkedin: "https://www.linkedin.com/in/rohit-shrivastava011/",
   resume:
-    "https://drive.google.com/file/d/1PSi2rX3Ot8o3FT8GnqguKoNhMj-Rqf3x/view?usp=sharing",
+    "https://drive.google.com/file/d/19-BdRrpskgiHfAZezdn05dCFpcxoIE_x/view?usp=sharing",
   title: "Rohit Shrivastava · UI/UX Designer",
   description:
     "Rohit Shrivastava — senior-level UI/UX designer. Led UX for large-scale products at Reno Plas.",
@@ -77,7 +77,7 @@ export const site = {
     { href: "https://www.linkedin.com/in/rohit-shrivastava011/", label: "LinkedIn" },
     { href: "mailto:shrivastavarohit2000@gmail.com", label: "Email" },
     {
-      href: "https://drive.google.com/file/d/1PSi2rX3Ot8o3FT8GnqguKoNhMj-Rqf3x/view?usp=sharing",
+      href: "https://drive.google.com/file/d/19-BdRrpskgiHfAZezdn05dCFpcxoIE_x/view?usp=sharing",
       label: "Resume",
     },
   ],

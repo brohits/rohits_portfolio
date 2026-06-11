@@ -1,3 +1,4 @@
+import { ImageWithPlaceholder } from "./LoadingPlaceholder";
 import { site } from "../data/site";
 
 export function About() {
@@ -14,11 +15,10 @@ export function About() {
             ))}
           </div>
           <figure className="about-photo">
-            <img
+            <ImageWithPlaceholder
               src={site.aboutImage}
               alt={`${site.name}, UI/UX designer`}
-              width={640}
-              height={640}
+              className="about-photo-media"
               loading="lazy"
             />
           </figure>
