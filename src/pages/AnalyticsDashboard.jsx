@@ -60,7 +60,14 @@ export function AnalyticsDashboard() {
       });
 
       if (!response.ok) {
-        throw new Error(response.status === 401 ? "Wrong password" : "Failed to load");
+        let message = response.status === 401 ? "Wrong password" : "Failed to load";
+        try {
+          const body = await response.json();
+          if (body?.error) message = body.error;
+        } catch {
+          /* ignore parse errors */
+        }
+        throw new Error(`${message} (${response.status})`);
       }
 
       const payload = await response.json();
@@ -162,7 +169,10 @@ export function AnalyticsDashboard() {
             <h1>Visitor dashboard</h1>
             <p className="analytics-sub">
               Storage: <strong>{data?.storage || "…"}</strong>
-              {data?.storage === "local" && " — add Vercel Blob on deploy for production persistence"}
+              {data?.storage === "vercel (add Blob store)" &&
+                " — create a Blob store in Vercel → Storage to save visits"}
+              {data?.storage === "local" &&
+                " — local file; add Vercel Blob on deploy for production persistence"}
             </p>
           </div>
           <div className="analytics-actions">
