@@ -31,12 +31,28 @@ export function ProjectCard({ project, index }) {
         aria-label={`Open ${project.title} case study`}
       />
       <div className="card-inner">
-        <CardVisual
-          mock={project.mock}
-          image={project.image}
-          video={project.video}
-          title={project.title}
-        />
+        <div className="card-visual">
+          <CardVisual
+            mock={project.mock}
+            image={project.image}
+            video={project.video}
+            title={project.title}
+          />
+          {project.impacts?.length > 0 && (
+            <div className="card-impacts" aria-label={`${project.title} impact`}>
+              {project.impacts.map((impact) => (
+                <div
+                  key={`${impact.label}-${impact.value}`}
+                  className="impact-badge impact-badge--dark"
+                >
+                  <span className="impact-pct">{impact.value}</span>
+                  <span className="impact-detail">{impact.label}</span>
+                  <span className="impact-num">{impact.detail}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="card-meta">

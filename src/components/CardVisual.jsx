@@ -7,11 +7,7 @@ import {
 } from "../lib/projectVideoManager";
 
 export function CardVisual({ mock, image, video, title }) {
-  return (
-    <div className="card-visual">
-      <MockPreview type={mock} image={image} video={video} title={title} />
-    </div>
-  );
+  return <MockPreview type={mock} image={image} video={video} title={title} />;
 }
 
 function VideoPreview({ video, title }) {

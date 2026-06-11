@@ -1236,6 +1236,38 @@ body.custom-cursor-active button {
   background: #0a0a0a;
 }
 
+.card-impacts {
+  position: absolute;
+  bottom: 0.65rem;
+  left: 0.65rem;
+  right: 0.65rem;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.card-impacts .impact-badge {
+  position: static;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+}
+
+.card-impacts .impact-pct {
+  font-size: 1rem;
+}
+
+.card-impacts .impact-detail,
+.card-impacts .impact-num {
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+}
+
 .impact-badge {
   position: absolute;
   bottom: 0.5rem;
@@ -1954,6 +1986,10 @@ body.custom-cursor-active button {
 
   .card-visual {
     height: clamp(12rem, 52vw, 16rem);
+  }
+
+  .card-impacts {
+    grid-template-columns: 1fr;
   }
 
   .card-title {

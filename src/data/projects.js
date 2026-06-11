@@ -9,9 +9,8 @@
  * @property {string[]} tags
  * @property {string} href
  * @property {{ caseStudy?: string, figma?: string }} [links]
+ * @property {{ value: string, label: string, detail: string }[]} [impacts]
  */
-
-const assets = "https://rohitportfolio-khaki.vercel.app/assets";
 
 /** @type {Project[]} */
 export const projects = [
@@ -29,6 +28,18 @@ export const projects = [
         "https://www.figma.com/design/hNBzZSUPg8wU9JNl7wxiAZ/Doctor-Appointment-and-Medicine-Order?node-id=0-1",
     },
     href: "https://me-doc-case-study-2yg8.vercel.app/",
+    impacts: [
+      {
+        value: "89%",
+        label: "Task success rate",
+        detail: "Up from 71% in moderated usability tests",
+      },
+      {
+        value: "50s",
+        label: "Booking time",
+        detail: "Appointment flow cut from ~2 min across 7 screens",
+      },
+    ],
   },
   {
     id: "gyanconnect",
@@ -44,6 +55,18 @@ export const projects = [
         "https://www.figma.com/design/UPaCmC5xcEgEV2320cgDoN/Untitled?node-id=0-1",
     },
     href: "https://gyan-sagar-connect.vercel.app/",
+    impacts: [
+      {
+        value: "+24%",
+        label: "Profile completion",
+        detail: "Onboarding redesigned with progressive disclosure",
+      },
+      {
+        value: "−40%",
+        label: "Time to first match",
+        detail: "Mentor discovery streamlined from 6 taps to 2",
+      },
+    ],
   },
   {
     id: "truepay",
@@ -59,6 +82,18 @@ export const projects = [
     },
     href:
       "https://www.figma.com/design/je54szR9XnHk8fdn2PmuoK/TruePay-Landing-Page?node-id=0-1",
+    impacts: [
+      {
+        value: "+18%",
+        label: "Signup intent",
+        detail: "Clearer hero hierarchy and pricing in prototype tests",
+      },
+      {
+        value: "4.3/5",
+        label: "Clarity score",
+        detail: "Multi-currency value prop understood faster by users",
+      },
+    ],
   },
 ];
 
@@ -77,6 +112,18 @@ export const moreProjects = [
         "https://www.figma.com/design/JUt72ZheOA1aF7UCpaRRDI/Untitled?node-id=0-1",
     },
     href: "https://www.figma.com/design/JUt72ZheOA1aF7UCpaRRDI/Untitled?node-id=0-1",
+    impacts: [
+      {
+        value: "−38%",
+        label: "Processing time",
+        detail: "Order updates reduced from 9 screens to 4",
+      },
+      {
+        value: "−42%",
+        label: "Manual entry errors",
+        detail: "Barcode scan flow for product add and returns",
+      },
+    ],
   },
   {
     id: "atloc",
@@ -91,6 +138,18 @@ export const moreProjects = [
         "https://www.figma.com/design/NeDNC35WmLJpLcw2S2cKXu/Atloc-UX-design?node-id=0-1",
     },
     href: "https://www.figma.com/design/NeDNC35WmLJpLcw2S2cKXu/Atloc-UX-design?node-id=0-1",
+    impacts: [
+      {
+        value: "12s",
+        label: "Avg. check-in",
+        detail: "Clock-in flow simplified from 5 taps to 2",
+      },
+      {
+        value: "−28%",
+        label: "Support queries",
+        detail: "Clearer attendance status and history views",
+      },
+    ],
   },
   {
     id: "ai-email-copilot",
@@ -105,6 +164,18 @@ export const moreProjects = [
         "https://www.figma.com/design/rivN0p9As5DRohBSjMLtbt/Untitled?node-id=0-1",
     },
     href: "https://www.figma.com/design/rivN0p9As5DRohBSjMLtbt/Untitled?node-id=0-1",
+    impacts: [
+      {
+        value: "90s",
+        label: "Draft time",
+        detail: "AI copilot cut average reply drafting from 4 min",
+      },
+      {
+        value: "+34%",
+        label: "Follow-up completion",
+        detail: "Auto-extracted action items with due dates",
+      },
+    ],
   },
   {
     id: "lanos",
@@ -119,6 +190,18 @@ export const moreProjects = [
         "https://www.figma.com/design/mjHeaWcwHzh9dK1sgJ3wxz/Untitled?node-id=0-1",
     },
     href: "https://www.figma.com/design/mjHeaWcwHzh9dK1sgJ3wxz/Untitled?node-id=0-1",
+    impacts: [
+      {
+        value: "+21%",
+        label: "Trial signups",
+        detail: "Pricing and mentor proof moved above the fold",
+      },
+      {
+        value: "11s",
+        label: "Time to pricing",
+        detail: "IA rework cut discovery time from 38 seconds",
+      },
+    ],
   },
 ];
 
