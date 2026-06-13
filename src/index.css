@@ -1989,7 +1989,36 @@ body.custom-cursor-active button {
   }
 
   .card-impacts {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+    bottom: 0.4rem;
+    left: 0.4rem;
+    right: 0.4rem;
+  }
+
+  .card-impacts .impact-badge {
+    padding: 0.3rem 0.4rem;
+    gap: 0.05rem 0.45rem;
+    grid-template-rows: auto;
+    align-items: center;
+  }
+
+  .card-impacts .impact-pct {
+    font-size: 0.8125rem;
+    grid-row: auto;
+  }
+
+  .card-impacts .impact-detail {
+    font-size: 0.5625rem;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-impacts .impact-num {
+    display: none;
   }
 
   .card-title {
